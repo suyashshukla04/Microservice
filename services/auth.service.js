@@ -3,12 +3,17 @@ import bcrypt from "bcryptjs";
 import User from "../models/user.model.js";
 
 export const registerUser = async (name,email,password) => {
+  
     const user = await User.findOne({where : { email }});
-    if(user){
+    
+    if(user)
+    {
         throw new Error("Email already in use");
     }
-    const hashedPassword = bcrypt.hashSync(password,10);
-    const newUser = new User({name,email,hashedPassword});
+    var salt = bcrypt.genSaltSync(10);
+    const hashedPassword = bcrypt.hashSync(password,salt);
+    
+    const newUser = await User.create({name,email,password:hashedPassword});
     return newUser
 }
 
